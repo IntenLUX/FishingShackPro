@@ -1,0 +1,13 @@
+## Interface: 60200
+## Name: Fishing Shack Pro
+## Title: |cff0066ffFishing Shack Pro|r
+## Notes: Checks for pole and hat upgrades while fishing
+## Author: Peashooter
+## Version: 0.0.1
+
+## X-Email: peashooter@intenlux.com
+## X-Copyright: Copyright (c) 2016 IntenLUX. All rights reserved.
+## X-Website: https://github.com/IntenLUX/FishingShackPro
+
+FishingShackPro_Localization.lua
+FishingShackPro.lua
