@@ -79,7 +79,7 @@ function FSP:CheckForUpgradesFromSomething(currentItemLink, theTable)
 			if betterItemLink then
 				-- output a chat frame message to inform the user what we did
 				EquipItemByName(betterItemLink)
-				print("|cff0066ffFishingShackPro:|r " .. L.UPGRADE_WARN .. currentItemLink .. L.UPGRADE_TEXT .. betterItemLink .. "!")
+				print("|cff0066ffFishingShackPro:|r " .. L["UPGRADE!"] .. " " .. currentItemLink .. " " .. L["was replaced with"] .. " " .. betterItemLink .. "!")
 				break -- found a superior item so skip the rest
 			end
 		end
@@ -92,7 +92,7 @@ function FSP:CheckForUpgradesFromNothing(theTable)
 		if betterItemLink then
 			-- output a chat frame message to inform the user what we did
 			EquipItemByName(betterItemLink)
-			print("|cff0066ffFishingShackPro:|r " .. L.UPGRADE_WARN .. L.EQUIPPED_TEXT .. betterItemLink .. "!")
+			print("|cff0066ffFishingShackPro:|r " .. L.["UPGRADE!"] .. " " .. L.["was replaced by"] .. betterItemLink .. "!")
 			break -- found a superior item so skip the rest
 		end
 	end 
