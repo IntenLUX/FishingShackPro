@@ -1,5 +1,8 @@
 local addon, ns = ...
-local L = ns.L
+local L = {}
+L["Now using"] = "Now using"
+L["replaced by"] = "replaced by"
+L["UPGRADE!"] = "UPGRADE!"
 
 -- define a fishing pole table sorted by an arbitrary 'best' order
 local fishPoles = {
@@ -40,11 +43,12 @@ local fishHats = {
 local FSP = CreateFrame("Frame", nil, UIParent)
 FSP:RegisterEvent("ADDON_LOADED")
 
--- Add a function to the local frame that can search the inventory for an itemID 
---   and return the link to the item. 
--- use string.find to locate an item:xxxx string within the returned hyperlink
---   from GetContainerItemLink(container,slot)
--- Returns a link to the upgraded item
+--[[
+Add a function to the local frame that can search the inventory for an itemID 
+and return the link to the item. Use string.find to locate an item:xxxx string 
+within the returned hyperlink from GetContainerItemLink(container,slot) function.
+The function eturns a link to the upgraded item
+]]--
 function FSP:SearchMyInventory(itemID)
 	-- format the itemID with the string within the link
 	local strItemID = "item:"..itemID..":" 
@@ -63,9 +67,11 @@ function FSP:SearchMyInventory(itemID)
 	end
 end
 
--- Add a function to the local frame that will loop over a passed table param
---  (in descending order based upon the pre-defined table structure) and break 
---   if we are already using the selected item OR if an upgrade is found
+--[[
+Add a function to the local frame that will loop over a passed table param
+(in descending order based upon the pre-defined table structure) and break 
+if we are already using the selected item OR if an upgrade is found.
+--]]
 function FSP:CheckForUpgradesFromSomething(currentItemLink, theTable)
 	for key, betterItemID in ipairs(theTable) do
 		-- extract the itemID from the passed Link
@@ -74,25 +80,31 @@ function FSP:CheckForUpgradesFromSomething(currentItemLink, theTable)
 		if currentItemID == betterItemID then 
 			-- already using the best so look no further
 			break
-		else -- check inventory for a superior item
+		-- check inventory for a superior item
+		else 
 			local betterItemLink = self:SearchMyInventory(betterItemID)
 			if betterItemLink then
-				-- output a chat frame message to inform the user what we did
 				EquipItemByName(betterItemLink)
-				print("|cff0066ffFishingShackPro:|r " .. L["UPGRADE!"] .. " " .. currentItemLink .. " " .. L["was replaced with"] .. " " .. betterItemLink .. "!")
+				-- output a chat frame message to inform the user what we did
+				print("|cff0066ffFishingShackPro:|r " .. L["UPGRADE!"] .. " " .. currentItemLink .. " " .. L["replaced by"] .. " " .. betterItemLink .. "!")
 				break -- found a superior item so skip the rest
 			end
 		end
 	end 
 end
 
+--[[
+Add a function to the local frame that will loop over a passed table param
+(in descending order based upon the pre-defined table structure) and break 
+if an upgrade is found.  Used when nothing is currently equipped.
+--]]
 function FSP:CheckForUpgradesFromNothing(theTable)
 	for key, betterItemID in ipairs(theTable) do
 		local betterItemLink = self:SearchMyInventory(betterItemID)
 		if betterItemLink then
-			-- output a chat frame message to inform the user what we did
 			EquipItemByName(betterItemLink)
-			print("|cff0066ffFishingShackPro:|r " .. L.["UPGRADE!"] .. " " .. L.["was replaced by"] .. betterItemLink .. "!")
+			-- output a chat frame message to inform the user what we did
+			print("|cff0066ffFishingShackPro:|r " .. L["UPGRADE!"] .. " " .. L["Now using"] .. betterItemLink .. "!")
 			break -- found a superior item so skip the rest
 		end
 	end 
@@ -107,6 +119,7 @@ function FSP:GetItemID(link)
 	end
 end
 
+-- Script handlers
 FSP:SetScript("OnEvent", function(self, event, ...)
 	if event == "ADDON_LOADED" and ... == addon then
 		-- we've loaded, who cares about the rest?
