@@ -1,12 +1,6 @@
 local addon, ns = ...
 local L = ns.L
 
-local FSP = CreateFrame("Button", "FSP", UIParent, "SecureActionButtonTemplate")
-
--- attach script and event handler
-FSP:SetScript("OnEvent", function(self, event, ...) return self[event] and self[event](self, ...) end)
-FSP:RegisterEvent("PLAYER_LOGIN")
-
 -- define a fishing pole table sorted by an arbitrary 'best' order
 local fishPoles = {
 -- ID     Name                               +Skill +Other          Faction?
@@ -42,6 +36,10 @@ local fishHats = {
 "19972" , -- Lucky Fishing Hat                   5   +15 STA
 }
 
+-- create the addon frame
+local FSP = CreateFrame("Frame", nil, UIParent)
+FSP:RegisterEvent("ADDON_LOADED")
+
 -- Add a function to the local frame that can search the inventory for an itemID 
 --   and return the link to the item. 
 -- use string.find to locate an item:xxxx string within the returned hyperlink
@@ -68,7 +66,7 @@ end
 -- Add a function to the local frame that will loop over a passed table param
 --  (in descending order based upon the pre-defined table structure) and break 
 --   if we are already using the selected item OR if an upgrade is found
-function FSP:CheckForUpgrades(currentItemLink, theTable)
+function FSP:CheckForUpgradesFromSomething(currentItemLink, theTable)
 	for key, betterItemID in ipairs(theTable) do
 		-- extract the itemID from the passed Link
 		local currentItemID = self:GetItemID(currentItemLink)
@@ -88,6 +86,18 @@ function FSP:CheckForUpgrades(currentItemLink, theTable)
 	end 
 end
 
+function FSP:CheckForUpgradesFromNothing(theTable)
+	for key, betterItemID in ipairs(theTable) do
+		local betterItemLink = self:SearchMyInventory(betterItemID)
+		if betterItemLink then
+			-- output a chat frame message to inform the user what we did
+			EquipItemByName(betterItemLink)
+			print("|cff0066ffFishingShackPro:|r " .. L.UPGRADE_WARN .. L.EQUIPPED_TEXT .. betterItemLink .. "!")
+			break -- found a superior item so skip the rest
+		end
+	end 
+end
+
 -- Extract the ItemID from the item link
 function FSP:GetItemID(link)
 	local itemID
@@ -97,36 +107,31 @@ function FSP:GetItemID(link)
 	end
 end
 
--- after the login event, confirm the addon is loaded
-function FSP:PLAYER_LOGIN()
-	self:UnregisterEvent("PLAYER_LOGIN") -- no longer needed
-	self:RegisterEvent("ADDON_LOADED") -- is this thing on?
-end
-
--- are we loaded?
-function FSP:ADDON_LOADED()
-	local arg1 = ...
-	-- is our addon loaded?
-	if (arg1 == addon) then
-		self:UnregisterEvent("ADDON_LOADED") -- we're good, stop monitoring
-		self:RegisterEvent("UNIT_INVENTORY_CHANGED", "player") -- start monitoring inventory updates
-	end	
-end
-
--- monitor UNIT_INVENTORY_CHANGED for when new items are looted that may be better than what we have		
-function FSP:UNIT_INVENTORY_CHANGED(toon)
-	-- get localized sub-type (i.e. "Fishing Poles")
-	local localFishingPoles = select(7, GetItemInfo(6256)) 
-	-- are we using a fishing pole of any kind?
-	local usingPole = IsEquippedItemType(localFishingPoles)
-	-- if we're using a fishing pole, then check for upgrades
-	if usingPole then
-		-- POLES
-		local poleLink = GetInventoryItemLink("player", 16)
-		self:CheckForUpgrades(poleLink, fishPoles)
-		
-		-- HATS
-		local hatLink = GetInventoryItemLink("player", 1)
-		self:CheckForUpgrades(hatLink, fishHats)
+FSP:SetScript("OnEvent", function(self, event, ...)
+	if event == "ADDON_LOADED" and ... == addon then
+		-- we've loaded, who cares about the rest?
+		self:UnregisterEvent("ADDON_LOADED")
+		-- now that we're loaded, start monitoring UNIT_INVENTORY_CHANGED for this player
+		self:RegisterEvent("UNIT_INVENTORY_CHANGED", "player")
+	elseif event == "UNIT_INVENTORY_CHANGED" then
+		-- get localized sub-type for the fishing pole (i.e. "Fishing Poles")
+		local localFishingPoles = select(7, GetItemInfo(6256)) 
+		-- are we using a fishing pole of any kind?
+		local usingPole = IsEquippedItemType(localFishingPoles)
+		-- if we're using a fishing pole, then check for upgrades
+		if usingPole then
+			-- POLES
+			local poleLink = GetInventoryItemLink("player", 16)
+			-- no need to check FromNothing as we already assume a fishing pole is equipped
+			self:CheckForUpgradesFromSomething(poleLink, fishPoles)
+			
+			-- HATS
+			local hatLink = GetInventoryItemLink("player", 1)
+			if hatLink == nil then
+				self:CheckForUpgradesFromNothing(fishHats)
+			else 
+				self:CheckForUpgradesFromSomething(hatLink, fishHats)
+			end
+		end
 	end
-end
+end)
