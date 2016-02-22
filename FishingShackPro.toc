@@ -3,7 +3,7 @@
 ## Title: |cff0066ffFishing Shack Pro|r
 ## Notes: Checks for pole and hat upgrades while fishing
 ## Author: Peashooter
-## Version: 0.0.1
+## Version: 6.2.3.002
 
 ## X-Email: peashooter@intenlux.com
 ## X-Copyright: Copyright (c) 2016 IntenLUX. All rights reserved.
