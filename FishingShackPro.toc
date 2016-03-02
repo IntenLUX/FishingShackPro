@@ -1,20 +1,15 @@
 ## Interface: 60200
 ## Name: Fishing Shack Pro
-## Title: |cff0066ffFishing Shack Pro|r
+## Title: Fishing Shack |cffff00ffPro|r
 ## Notes: Checks for pole and hat upgrades while fishing
+## Version: @project-version@
 ## Author: Peashooter
-## Version: #v6.2.3.007
-## X-Curse-Packaged-Version: release
-## X-Curse-Project-Name: Fishing Shack Pro
-## X-Curse-Project-ID: fishing-shack-pro
-## X-Curse-Repository-ID: wow/fishing-shack-pro/mainline
-## X-Curse-Packaged-Version: v6.2.3.007
-## X-Curse-Project-Name: Fishing Shack Pro
-## X-Curse-Project-ID: fishing-shack-pro
-## X-Curse-Repository-ID: wow/fishing-shack-pro/mainline
+
+## SavedVariables: REPLACE_LURE
 
 ## X-Email: peashooter@intenlux.com
 ## X-Copyright: Copyright (c) 2016 IntenLUX. All rights reserved.
+## X-Website: http://wow.curseforge.com/addons/fishing-shack-pro/
 ## X-Website: https://github.com/IntenLUX/FishingShackPro
 
 Localization.lua
